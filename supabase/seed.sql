@@ -113,3 +113,105 @@ insert into public.audit_logs (actor_id, actor_role, entity, entity_id, action, 
   ('00000000-0000-0000-0000-000000000001', 'admin', 'restaurants', '10000000-0000-0000-0000-000000000005', 'verified', '{"status":"verified"}'),
   ('00000000-0000-0000-0000-000000000001', 'admin', 'ngos', '20000000-0000-0000-0000-000000000001', 'verified', '{"verified":true}'),
   ('00000000-0000-0000-0000-000000000001', 'admin', 'listings', '30000000-0000-0000-0000-000000000001', 'published', '{"status":"live"}');
+
+-- ───────── Stage 3 additions: orders in every state, ratings, incidents, donations ─────────
+
+-- buyer 022 = COD-eligible (trust 80)
+update public.profiles set trust_score = 80 where id = '00000000-0000-0000-0000-000000000022';
+
+-- two historical picked_up COD orders for buyer 022 (listing 1; qty 5 → 3 left)
+update public.listings set qty_left = 3 where id = '30000000-0000-0000-0000-000000000001';
+insert into public.orders (id, buyer_id, listing_id, qty, amount_paise, pay_method, status,
+                           qr_token, pickup_otp, picked_up_at, cod_collected)
+values
+  ('40000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000022',
+   '30000000-0000-0000-0000-000000000001', 1, 9900, 'cod', 'picked_up',
+   'seed-qr-hist-1', '111111', now() - interval '1 day', true),
+  ('40000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000022',
+   '30000000-0000-0000-0000-000000000001', 1, 9900, 'cod', 'picked_up',
+   'seed-qr-hist-2', '222222', now() - interval '1 day', true);
+insert into public.payments (order_id, method, amount_paise, status) values
+  ('40000000-0000-0000-0000-000000000001', 'cod', 9900, 'captured'),
+  ('40000000-0000-0000-0000-000000000002', 'cod', 9900, 'captured');
+
+-- ratings on those orders (triggers recompute restaurant rating_avg)
+insert into public.ratings (order_id, stars, tags, comment) values
+  ('40000000-0000-0000-0000-000000000001', 5, '{quantity,value}', 'Good quantity'),
+  ('40000000-0000-0000-0000-000000000002', 4, '{freshness}', 'Fresh puffs');
+
+-- listing 3: expired yesterday (vendor 2) — orders: picked_up, no_show, cancelled, refunded
+insert into public.listings
+  (id, restaurant_id, category, qty_total, qty_left, original_value_paise, price_paise,
+   contents_hint, photo_url, photo_geo, photo_taken_at, prep_time, consume_by, closes_at, status)
+values
+  ('30000000-0000-0000-0000-000000000003', '10000000-0000-0000-0000-000000000002', 'veg',
+   6, 2, 15900, 6900, '4 puffs + 2 buns', 'seed://photos/puff-corner/box-3.jpg',
+   extensions.st_setsrid(extensions.st_makepoint(72.8330, 19.1320), 4326),
+   now() - interval '26 hours', now() - interval '27 hours',
+   now() + interval '3 hours', now() - interval '1 hour', 'expired');
+insert into public.pickup_windows (listing_id, start_at, end_at, grace_min)
+values ('30000000-0000-0000-0000-000000000003', now() - interval '2 hours', now() - interval '1 hour', 10);
+
+insert into public.orders (id, buyer_id, listing_id, qty, amount_paise, pay_method, status,
+                           qr_token, pickup_otp, picked_up_at, cod_collected) values
+  ('40000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000021',
+   '30000000-0000-0000-0000-000000000003', 1, 6900, 'prepaid_upi', 'picked_up',
+   'seed-qr-hist-3', '333333', now() - interval '1 hour - 30 minutes', false),
+  ('40000000-0000-0000-0000-000000000004', '00000000-0000-0000-0000-000000000023',
+   '30000000-0000-0000-0000-000000000003', 1, 6900, 'prepaid_upi', 'no_show',
+   'seed-qr-hist-4', '444444', null, false),
+  ('40000000-0000-0000-0000-000000000005', '00000000-0000-0000-0000-000000000021',
+   '30000000-0000-0000-0000-000000000003', 1, 6900, 'prepaid_upi', 'cancelled',
+   'seed-qr-hist-5', '555555', null, false),
+  ('40000000-0000-0000-0000-000000000006', '00000000-0000-0000-0000-000000000021',
+   '30000000-0000-0000-0000-000000000003', 1, 6900, 'prepaid_upi', 'refunded',
+   'seed-qr-hist-6', '666666', null, false);
+insert into public.payments (order_id, gateway_ref, razorpay_order_id, method, amount_paise, status, refund_ref) values
+  ('40000000-0000-0000-0000-000000000003', 'pay_seed3', 'order_seed3', 'upi', 6900, 'captured', null),
+  ('40000000-0000-0000-0000-000000000004', 'pay_seed4', 'order_seed4', 'upi', 6900, 'captured', null),
+  ('40000000-0000-0000-0000-000000000006', 'pay_seed6', 'order_seed6', 'upi', 6900, 'refunded', 'rfnd_seed6');
+update public.profiles set no_show_count = 1, trust_score = 30 where id = '00000000-0000-0000-0000-000000000023';
+
+-- incidents: one open (freshness), one resolved (refund)
+insert into public.incidents (id, order_id, type, evidence_url, status, resolution_note, resolved_by) values
+  ('50000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000003', 'freshness', 'seed://evidence/photo-1.jpg', 'open', null, null),
+  ('50000000-0000-0000-0000-000000000002', '40000000-0000-0000-0000-000000000006', 'quantity', null, 'resolved_refund', 'Refunded in full', '00000000-0000-0000-0000-000000000001');
+
+-- listing 4: donated & completed (vendor 4) — donation trail demo
+insert into public.listings
+  (id, restaurant_id, category, qty_total, qty_left, original_value_paise, price_paise,
+   contents_hint, photo_url, photo_geo, photo_taken_at, prep_time, consume_by, closes_at, status, donated_at)
+values
+  ('30000000-0000-0000-0000-000000000004', '10000000-0000-0000-0000-000000000004', 'veg',
+   4, 4, 12900, 5900, '6 farsan packs', 'seed://photos/parle-sweets/box-4.jpg',
+   extensions.st_setsrid(extensions.st_makepoint(72.8510, 19.0975), 4326),
+   now() - interval '26 hours', now() - interval '27 hours',
+   now() + interval '3 hours', now() - interval '2 hours', 'donated', now() - interval '1 hour');
+insert into public.pickup_windows (listing_id, start_at, end_at, grace_min)
+values ('30000000-0000-0000-0000-000000000004', now() - interval '2 hours', now() - interval '1 hour', 10);
+insert into public.donations (id, listing_id, ngo_id, claimed_at, picked_up_at, claim_expires_at,
+                              beneficiary_count, receipt_no, broadcast_count)
+values ('60000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000004',
+        '20000000-0000-0000-0000-000000000001', now() - interval '50 minutes', now() - interval '20 minutes',
+        null, 12, 'PS-DON-2026-0001', 1);
+
+-- listing 5: donated, unclaimed (NGO portal demo)
+insert into public.listings
+  (id, restaurant_id, category, qty_total, qty_left, original_value_paise, price_paise,
+   contents_hint, photo_url, photo_geo, photo_taken_at, prep_time, consume_by, closes_at, status, donated_at)
+values
+  ('30000000-0000-0000-0000-000000000005', '10000000-0000-0000-0000-000000000005', 'egg',
+   4, 4, 13900, 6900, '4 pav + 4 bhurji packs', 'seed://photos/parle-bakes/box-5.jpg',
+   extensions.st_setsrid(extensions.st_makepoint(72.8480, 19.0990), 4326),
+   now() - interval '26 hours', now() - interval '27 hours',
+   now() + interval '3 hours', now() - interval '30 minutes', 'donated', now() - interval '25 minutes');
+insert into public.pickup_windows (listing_id, start_at, end_at, grace_min)
+values ('30000000-0000-0000-0000-000000000005', now() - interval '2 hours', now() - interval '1 hour', 10);
+insert into public.donations (id, listing_id, broadcast_count)
+values ('60000000-0000-0000-0000-000000000002', '30000000-0000-0000-0000-000000000005', 1);
+
+-- audit rows for stage-3 seed states
+insert into public.audit_logs (actor_id, actor_role, entity, entity_id, action, old_value, new_value) values
+  ('00000000-0000-0000-0000-000000000023', 'buyer', 'orders', '40000000-0000-0000-0000-000000000004', 'no_show', '{"status":"paid"}', '{"status":"no_show"}'),
+  ('00000000-0000-0000-0000-000000000001', 'admin', 'incidents', '50000000-0000-0000-0000-000000000002', 'resolved_refund', '{"status":"open"}', '{"action":"refund"}'),
+  ('00000000-0000-0000-0000-000000000014', 'vendor_owner', 'listings', '30000000-0000-0000-0000-000000000004', 'donated', '{"status":"expired"}', '{"status":"donated"}');

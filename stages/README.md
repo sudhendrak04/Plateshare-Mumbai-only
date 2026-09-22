@@ -12,7 +12,7 @@
 |---|---|---|---|---|
 | 1 | `stage1.md` | Repo scaffolding + tooling (git, Flutter apps, Supabase project, CI) | — | ✅ Complete |
 | 2 | `stage2.md` | Database core — schema, enums, constraints, RLS, triggers | 1 | ✅ Complete |
-| 3 | `stage3.md` | Business logic — RPC functions, sweeps, seed, SQL tests | 2 | ⬜ Not started |
+| 3 | `stage3.md` | Business logic — RPC functions, sweeps, seed, SQL tests | 2 | ✅ Complete |
 | 4 | `stage4.md` | Admin + NGO web console (Next.js) | 2 (3 for queues) | ⬜ Not started |
 | 5 | `stage5.md` | Vendor Flutter app | 3 | ⬜ Not started |
 | 6 | `stage6.md` | Buyer Flutter app | 3 | ⬜ Not started |
@@ -70,3 +70,4 @@ Tracked in `doc/PENDING_DECISIONS.md`:
 | Sep 2026 | Stage folder created; 8 stages defined; no build work started yet. |
 | Sep 2026 | **Stage 1 complete** — toolchain installed (Flutter 3.47.5, JDK 17, Android SDK 36, Supabase CLI 2.117.0), both Flutter apps + Next.js console scaffolded, all analyze/lint/test/build gates green, debug APKs built for both apps, CI workflow committed, initial git commit. Deferred: emulator/device check (founder), GitHub push (founder), shadcn init (Stage 4). |
 | Sep 2026 | **Stage 2 complete** — 9 migrations (17 tables, 13 enums, PostGIS, price/freshness constraints, RLS on all tables, 5 trigger groups incl. live-listing guard + audit immutability), seed data (2 Mumbai clusters, 5 vendors, NGO, demo listing), 10/10 pgTAP tests passing. Fixed RLS recursion via security-definer helper. |
+| Sep 2026 | **Stage 3 complete** — 25 RPC functions (buyer/vendor/NGO/admin + 3 sweeps + cron wrapper), COD trust gate, QR/OTP pickup verification, suspension ladder, donation broadcast/claim/TTL, all money-path pgTAP tests passing (35 tests total across both files). Money-path tests written alongside implementation. Seed now demos every order state. Payment gateway + payout SQL deferred to Stage 7 (outbox rows produced). |
