@@ -66,9 +66,9 @@ insert into auth.users (
   ('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000021', 'authenticated', 'authenticated', '+919900000021', now(), null, '{}', '{"name":"Test Buyer One"}', now(), now(), '', '', '', '', '', ''),
   ('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000022', 'authenticated', 'authenticated', '+919900000022', now(), null, '{}', '{"name":"Test Buyer Two"}', now(), now(), '', '', '', '', '', ''),
   ('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000023', 'authenticated', 'authenticated', '+919900000023', now(), null, '{}', '{"name":"Test Buyer Three"}', now(), now(), '', '', '', '', '', ''),
-  ('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000031', 'authenticated', 'authenticated', '+919900000031', now(), null, '{}', '{"name":"NGO Contact Person"}', now(), now(), '', '', '', '', '', ''),
+  ('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000031', 'authenticated', 'authenticated', '+919900000031', now(), null, '{"provider":"email","providers":["email"],"role":"ngo"}', '{"name":"NGO Contact Person"}', now(), now(), '', '', '', '', '', ''),
   ('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000016', 'authenticated', 'authenticated', '+919900000016', now(), null, '{}', '{"name":"Ghatkopar Kitchen Owner"}', now(), now(), '', '', '', '', '', ''),
-  ('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000032', 'authenticated', 'authenticated', '+919900000032', now(), null, '{}', '{"name":"NGO Contact Two"}', now(), now(), '', '', '', '', '', '');
+  ('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000032', 'authenticated', 'authenticated', '+919900000032', now(), null, '{"provider":"email","providers":["email"],"role":"ngo"}', '{"name":"NGO Contact Two"}', now(), now(), '', '', '', '', '', '');
 
 -- restaurants (5 verified vendors across both clusters)
 insert into public.restaurants

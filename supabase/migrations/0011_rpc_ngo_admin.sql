@@ -25,6 +25,9 @@ begin
      extensions.st_setsrid(extensions.st_makepoint(p_lng, p_lat), 4326), false)
   returning id into v_id;
 
+  -- grant the caller the ngo role so the portal guard admits them
+  update public.profiles set role = 'ngo' where id = auth.uid();
+
   perform public.audit('ngos', v_id::text, 'applied', null, jsonb_build_object('name', p_name));
   return v_id;
 end;
