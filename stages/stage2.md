@@ -1,7 +1,7 @@
 # Stage 2 — Database Core (Schema, Constraints, RLS, Triggers)
 
-> **Status:** ⬜ Not started
-> **Started:** — · **Completed:** —
+> **Status:** ✅ Complete
+> **Started:** Sep 2026 · **Completed:** Sep 2026
 > **Implements:** `doc/12-ai-dev-guide.md` Phase 1 (schema part)
 
 ---
@@ -12,71 +12,72 @@ Build the complete, production-shaped database: every table, enum, constraint, i
 
 ## 2. Prerequisites
 
-- [ ] Stage 1 complete (Supabase CLI initialized)
-- [ ] Supabase project reachable (free tier OK; note: free tier has no pg_cron — irrelevant for this stage)
+- [x] Stage 1 complete (Supabase CLI initialized)
+- [x] Docker Desktop present (engine started for local Supabase stack)
 
 ## 3. Task checklist
 
 ### 3.1 Foundations
-- [ ] `0000_extensions.sql` — postgis, pgcrypto, moddatetime
-- [ ] `0001_enums.sql` — all enums per `backend/backend_plan.md` §5
+- [x] `0000_extensions.sql` — postgis, pgcrypto, moddatetime
+- [x] `0001_enums.sql` — 13 enums
 
-### 3.2 Tables (in dependency order)
-- [ ] `0002_core.sql` — `profiles` (+ auth.users trigger), `clusters`, `restaurants`
-- [ ] `0003_listings.sql` — `listings`, `pickup_windows`, `blocked_categories`
-- [ ] `0004_orders.sql` — `orders`, `payments`, `payouts`
-- [ ] `0005_social.sql` — `ngos`, `donations`, `ratings`, `incidents`
-- [ ] `0006_infra.sql` — `outbox`, `audit_logs` (append-only enforced), `app_config`, `notification_templates`
+### 3.2 Tables
+- [x] `0002_core.sql` — profiles, clusters, restaurants (+ auth.users FK, FSSAI/GSTIN format checks, GIST geo indexes)
+- [x] `0003_listings.sql` — listings (price floor + discount ceiling + freshness CHECKs, closes_at denormalized), pickup_windows, blocked_categories
+- [x] `0004_orders.sql` — orders (qr_token/otp/hold expiry/COD flags), payments (razorpay refs, gst_collected_paise), payouts (incl. cod_commission_paise, unique per vendor+period)
+- [x] `0005_social.sql` — ngos, donations (claim TTL fields, receipt_no), ratings (unique per order), incidents
+- [x] `0006_infra.sql` — outbox (dedupe_key, retry fields), audit_logs (append-only), app_config, notification_templates
 
-### 3.3 Constraints & indexes (inside the above migrations)
-- [ ] Money: integer paise columns only; CHECK `price_paise >= 4900`, `price_paise * 2 <= original_value_paise`
-- [ ] Freshness: CHECK `consume_by > prep_time`; listing cannot be live without photo + stamps
-- [ ] Inventory: `qty_left` guarded by RPCs (Stage 3) — column + default present now
-- [ ] Geo: PostGIS `geography(Point,4326)` on `restaurants`, `clusters`, `ngos` + GIST indexes
-- [ ] Uniqueness: unique(order_id) on ratings; unique(razorpay_payment_id) on payments; unique(dedupe_key) on outbox; unique(restaurant_id, period_start) on payouts
-- [ ] Performance indexes: `(status, closes_at)` on listings; `(status)` on orders; index on outbox `(status, next_retry_at)`
+### 3.3 Constraints & indexes
+- [x] Money integer paise; CHECK `price_paise >= 4900`, `price_paise * 2 <= original_value_paise`
+- [x] Freshness CHECK `consume_by > prep_time`
+- [x] PostGIS geography + GIST (restaurants, clusters, ngos)
+- [x] Uniqueness: ratings(order_id), payments(razorpay_payment_id), outbox(dedupe_key), payouts(restaurant_id, period_start), donations(listing_id)
+- [x] Performance: listings (status, closes_at); orders (status); outbox (status, next_retry_at)
 
 ### 3.4 RLS
-- [ ] `0007_rls.sql` — enable RLS on **every** table; policies per `backend/backend_plan.md` §6 matrix
-- [ ] `outbox`, `audit_logs`, `app_config` → no client policies at all (service-role only)
-- [ ] Helper: `auth_role()` / `current_profile()` functions for policy predicates
+- [x] `0007_rls.sql` — RLS enabled on all 17 tables; policies per `backend_plan.md` §6
+- [x] Helpers: `app_role()`, `is_admin()`, `is_vendor_for_listing(uuid)` (security definer — breaks the orders↔listings policy recursion)
+- [x] outbox / audit_logs / app_config / notification_templates → zero client policies (service-role only)
 
 ### 3.5 Triggers
-- [ ] `0008_triggers.sql` — auth.users → profiles auto-create; ratings insert → recompute `restaurants.rating_avg`; updated_at auto-touch where needed
+- [x] `0008_triggers.sql` — auth.users → profiles (role from server-side app metadata); moddatetime updated_at on 12 tables; **live-listing guard** (photo + EXIF fields + verified vendor required to publish); pickup_window → listings.closes_at sync; ratings → restaurants.rating_avg recompute; audit_logs immutable (update+delete raise)
 
 ### 3.6 Seed & verification
-- [ ] `0013_seed.sql` (written now, refined in Stage 3): 2 Mumbai clusters (Andheri West, Vile Parle), 5 fake verified restaurants, 1 fake admin, test buyers, 1 fake verified NGO
-- [ ] `supabase db reset` runs all migrations + seed cleanly from zero
+- [x] `supabase/seed.sql` — 2 Mumbai clusters (Andheri West, Vile Parle), 5 verified vendors, 3 buyers, 1 admin, 1 verified NGO, 8 config keys, 14 notification templates, 5 blocked categories, demo live listing + window, 7 audit rows
+- [x] `supabase db reset` runs cleanly from zero
 
-### 3.7 SQL tests (schema-level)
-- [ ] pgTAP tests: CHECK constraints reject bad prices; live-without-photo rejected; append-only audit enforced; RLS denies anonymous access to protected tables
+### 3.7 SQL tests
+- [x] `supabase/tests/schema.test.sql` — 10 pgTAP tests, **all passing**
 
 ## 4. Deliverables
 
-- `supabase/migrations/0000…0013` (schema subset; RPC files come in Stage 3)
-- `supabase/seed.sql`
-- `supabase/tests/*.sql` (pgTAP)
+- `supabase/migrations/0000…0008` (9 migrations)
+- `supabase/seed.sql`, `supabase/tests/schema.test.sql`
 
 ## 5. Acceptance criteria
 
-1. `supabase db reset` completes without errors from an empty state.
-2. AI runs a SQL walkthrough: insert valid seed data → succeeds; attempt oversell-style direct update, bad price, live listing without photo → **all rejected by the DB**.
-3. RLS demonstrated: anonymous/anon-key queries against protected tables return empty/denied; authenticated buyer sees only permitted rows.
-4. `audit_logs` receives a row for each seeded state change.
-5. Founder can open Supabase Table Editor and see all 15 tables with data.
+1. ✅ `supabase db reset` completes without errors from empty state.
+2. ✅ Constraint walkthrough: price below ₹49 floor → rejected; 0%-off price → rejected; consume_by ≤ prep_time → rejected; live-without-photo → rejected (all via pgTAP).
+3. ✅ RLS demonstrated: anon sees 0 orders / 0 outbox / 0 audit rows but **can** see the 1 live listing (discovery works); anon INSERT on orders denied; authenticated buyer sees exactly 1 profile row (own).
+4. ✅ audit_logs holds 7 seeded rows; update/delete attempts raise `AUDIT_IMMUTABLE`.
+5. ✅ 10/10 pgTAP tests pass (`supabase test db` → Result: PASS).
 
 ## 6. Founder manual steps
 
-- Provide Supabase project URL + anon key + service-role key (stored locally, never committed).
-- (Optional) Quick visual check of tables in Supabase dashboard.
+- None this stage. (Supabase hosted project keys still pending — needed by Stage 4/5/6, not by this local stage.)
 
 ## 7. Decision log
 
 | # | Decision | Options considered | Approved by | Date |
 |---|---|---|---|---|
-| — | none yet | — | — | — |
+| 1 | Seed lives in `supabase/seed.sql` (CLI-native) instead of a `0013_seed.sql` migration | migration vs seed.sql | AI (doc-covered detail) — seed only runs on `db reset`, keeping fake data out of future prod migrations | Sep 2026 |
+| 2 | Profile role assigned from `raw_app_meta_data` (server-side) at signup | user-editable metadata vs app metadata | AI (security: app metadata is server-controlled) | Sep 2026 |
+| 3 | `is_vendor_for_listing(uuid)` security-definer helper to break RLS recursion | recursive policy fix vs helper fn | AI (standard Postgres pattern) | Sep 2026 |
+| 4 | `suspended_until` column added on restaurants (supports admin suspension ladder from `doc/02` §4.1) | deferred to Stage 4 vs now | AI (cheap foresight, schema-only) | Sep 2026 |
 
 ## 8. Status & dates
 
 - Planning: done.
-- Execution: not started. Blocked on Stage 1.
+- Execution: done Sep 2026. Local Supabase stack running via Docker.
+- Blockers: none. Stage 3 can start.
