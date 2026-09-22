@@ -1,0 +1,41 @@
+# --- Secrets / env (never commit) ---
+.env
+.env.*
+!.env.example
+*.local
+key.properties
+*.jks
+*.keystore
+
+# --- Node / Next.js ---
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+.turbo/
+
+# --- Flutter / Dart ---
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+
+# --- Android / Gradle ---
+.gradle/
+local.properties
+*.iml
+
+# --- Supabase local ---
+supabase/.branches/
+supabase/.temp/
+
+# --- OS / IDE ---
+Thumbs.db
+Desktop.ini
+.vscode/
+.idea/
+*.log
