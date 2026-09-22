@@ -13,7 +13,7 @@
 | 1 | `stage1.md` | Repo scaffolding + tooling (git, Flutter apps, Supabase project, CI) | — | ✅ Complete |
 | 2 | `stage2.md` | Database core — schema, enums, constraints, RLS, triggers | 1 | ✅ Complete |
 | 3 | `stage3.md` | Business logic — RPC functions, sweeps, seed, SQL tests | 2 | ✅ Complete |
-| 4 | `stage4.md` | Admin + NGO web console (Next.js) | 2 (3 for queues) | ⬜ Not started |
+| 4 | `stage4.md` | Admin + NGO web console (Next.js) | 2 (3 for queues) | ✅ Complete |
 | 5 | `stage5.md` | Vendor Flutter app | 3 | ⬜ Not started |
 | 6 | `stage6.md` | Buyer Flutter app | 3 | ⬜ Not started |
 | 7 | `stage7.md` | Edge Functions, scheduled jobs, notifications | 3 | ⬜ Not started |
@@ -71,3 +71,4 @@ Tracked in `doc/PENDING_DECISIONS.md`:
 | Sep 2026 | **Stage 1 complete** — toolchain installed (Flutter 3.47.5, JDK 17, Android SDK 36, Supabase CLI 2.117.0), both Flutter apps + Next.js console scaffolded, all analyze/lint/test/build gates green, debug APKs built for both apps, CI workflow committed, initial git commit. Deferred: emulator/device check (founder), GitHub push (founder), shadcn init (Stage 4). |
 | Sep 2026 | **Stage 2 complete** — 9 migrations (17 tables, 13 enums, PostGIS, price/freshness constraints, RLS on all tables, 5 trigger groups incl. live-listing guard + audit immutability), seed data (2 Mumbai clusters, 5 vendors, NGO, demo listing), 10/10 pgTAP tests passing. Fixed RLS recursion via security-definer helper. |
 | Sep 2026 | **Stage 3 complete** — 25 RPC functions (buyer/vendor/NGO/admin + 3 sweeps + cron wrapper), COD trust gate, QR/OTP pickup verification, suspension ladder, donation broadcast/claim/TTL, all money-path pgTAP tests passing (35 tests total across both files). Money-path tests written alongside implementation. Seed now demos every order state. Payment gateway + payout SQL deferred to Stage 7 (outbox rows produced). |
+| Sep 2026 | **Stage 4 complete** — full Next.js console (admin: ops dashboard w/ sell-through, vendor+NGO verification queues, listing audit with EXIF/geo flags + one-click delist, dispute resolution, GST CSV export; NGO portal with claim/pickup/beneficiaries), live Mumbai-IST clock, role-guarded shell. Security migration 0013: column-level grants kill vendor self-verification escalation, self-escalation trigger, audit RPC raises for non-admins. All gates green (lint/tsc/build 0, 35/35 SQL tests, API smoke incl. NGO-denied-on-admin-RPC). Dev logins seeded. |

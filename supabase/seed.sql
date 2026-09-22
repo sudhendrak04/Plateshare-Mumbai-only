@@ -50,23 +50,25 @@ insert into public.clusters (name, center, radius_m) values
 
 -- users (trigger creates profiles; role via server-side app metadata)
 insert into auth.users (
-  id, aud, role, phone, phone_confirmed_at,
+  instance_id, id, aud, role, phone, phone_confirmed_at, email,
   raw_app_meta_data, raw_user_meta_data,
   created_at, updated_at,
   confirmation_token, recovery_token,
   email_change, email_change_token_new,
   phone_change, phone_change_token
 ) values
-  ('00000000-0000-0000-0000-000000000001', 'authenticated', 'authenticated', '+919900000001', now(), '{"role":"admin"}', '{"name":"PlateShare Admin"}', now(), now(), '', '', '', '', '', ''),
-  ('00000000-0000-0000-0000-000000000011', 'authenticated', 'authenticated', '+919900000011', now(), '{}', '{"name":"Andheri Bakery Owner"}', now(), now(), '', '', '', '', '', ''),
-  ('00000000-0000-0000-0000-000000000012', 'authenticated', 'authenticated', '+919900000012', now(), '{}', '{"name":"Puff Corner Owner"}', now(), now(), '', '', '', '', '', ''),
-  ('00000000-0000-0000-0000-000000000013', 'authenticated', 'authenticated', '+919900000013', now(), '{}', '{"name":"Cafe West Owner"}', now(), now(), '', '', '', '', '', ''),
-  ('00000000-0000-0000-0000-000000000014', 'authenticated', 'authenticated', '+919900000014', now(), '{}', '{"name":"Parle Sweets Owner"}', now(), now(), '', '', '', '', '', ''),
-  ('00000000-0000-0000-0000-000000000015', 'authenticated', 'authenticated', '+919900000015', now(), '{}', '{"name":"Parle Bakes Owner"}', now(), now(), '', '', '', '', '', ''),
-  ('00000000-0000-0000-0000-000000000021', 'authenticated', 'authenticated', '+919900000021', now(), '{}', '{"name":"Test Buyer One"}', now(), now(), '', '', '', '', '', ''),
-  ('00000000-0000-0000-0000-000000000022', 'authenticated', 'authenticated', '+919900000022', now(), '{}', '{"name":"Test Buyer Two"}', now(), now(), '', '', '', '', '', ''),
-  ('00000000-0000-0000-0000-000000000023', 'authenticated', 'authenticated', '+919900000023', now(), '{}', '{"name":"Test Buyer Three"}', now(), now(), '', '', '', '', '', ''),
-  ('00000000-0000-0000-0000-000000000031', 'authenticated', 'authenticated', '+919900000031', now(), '{}', '{"name":"NGO Contact Person"}', now(), now(), '', '', '', '', '', '');
+  ('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000001', 'authenticated', 'authenticated', '+919900000001', now(), 'admin@plateshare.local', '{"provider":"email","providers":["email"],"role":"admin"}', '{"name":"PlateShare Admin"}', now(), now(), '', '', '', '', '', ''),
+  ('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000011', 'authenticated', 'authenticated', '+919900000011', now(), null, '{}', '{"name":"Andheri Bakery Owner"}', now(), now(), '', '', '', '', '', ''),
+  ('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000012', 'authenticated', 'authenticated', '+919900000012', now(), null, '{}', '{"name":"Puff Corner Owner"}', now(), now(), '', '', '', '', '', ''),
+  ('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000013', 'authenticated', 'authenticated', '+919900000013', now(), null, '{}', '{"name":"Cafe West Owner"}', now(), now(), '', '', '', '', '', ''),
+  ('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000014', 'authenticated', 'authenticated', '+919900000014', now(), null, '{}', '{"name":"Parle Sweets Owner"}', now(), now(), '', '', '', '', '', ''),
+  ('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000015', 'authenticated', 'authenticated', '+919900000015', now(), null, '{}', '{"name":"Parle Bakes Owner"}', now(), now(), '', '', '', '', '', ''),
+  ('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000021', 'authenticated', 'authenticated', '+919900000021', now(), null, '{}', '{"name":"Test Buyer One"}', now(), now(), '', '', '', '', '', ''),
+  ('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000022', 'authenticated', 'authenticated', '+919900000022', now(), null, '{}', '{"name":"Test Buyer Two"}', now(), now(), '', '', '', '', '', ''),
+  ('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000023', 'authenticated', 'authenticated', '+919900000023', now(), null, '{}', '{"name":"Test Buyer Three"}', now(), now(), '', '', '', '', '', ''),
+  ('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000031', 'authenticated', 'authenticated', '+919900000031', now(), null, '{}', '{"name":"NGO Contact Person"}', now(), now(), '', '', '', '', '', ''),
+  ('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000016', 'authenticated', 'authenticated', '+919900000016', now(), null, '{}', '{"name":"Ghatkopar Kitchen Owner"}', now(), now(), '', '', '', '', '', ''),
+  ('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000032', 'authenticated', 'authenticated', '+919900000032', now(), null, '{}', '{"name":"NGO Contact Two"}', now(), now(), '', '', '', '', '', '');
 
 -- restaurants (5 verified vendors across both clusters)
 insert into public.restaurants
@@ -209,6 +211,38 @@ insert into public.pickup_windows (listing_id, start_at, end_at, grace_min)
 values ('30000000-0000-0000-0000-000000000005', now() - interval '2 hours', now() - interval '1 hour', 10);
 insert into public.donations (id, listing_id, broadcast_count)
 values ('60000000-0000-0000-0000-000000000002', '30000000-0000-0000-0000-000000000005', 1);
+
+-- dev login for the admin console (email+password works locally without SMS provider)
+-- bcrypt cost 10 to match GoTrue's own hashing
+update auth.users
+set encrypted_password = extensions.crypt('plateshare-dev', extensions.gen_salt('bf', 10)),
+    email_confirmed_at = now()
+where id = '00000000-0000-0000-0000-000000000001';
+
+-- dev login for the NGO portal
+update auth.users
+set email = 'ngo@plateshare.local',
+    encrypted_password = extensions.crypt('plateshare-ngo', extensions.gen_salt('bf', 10)),
+    email_confirmed_at = now()
+where id = '00000000-0000-0000-0000-000000000031';
+
+-- password sign-in needs an email identity row (SQL seed must add it manually).
+-- Match GoTrue's own shape: provider_id = user uuid, identity_data with sub/email/verified.
+insert into auth.identities (id, user_id, provider_id, provider, identity_data, last_sign_in_at, created_at, updated_at)
+values
+  ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', 'email',
+    '{"sub":"00000000-0000-0000-0000-000000000001","email":"admin@plateshare.local","email_verified":true,"phone_verified":false}',
+    now(), now(), now()),
+  ('00000000-0000-0000-0000-000000000031', '00000000-0000-0000-0000-000000000031', '00000000-0000-0000-0000-000000000031', 'email',
+    '{"sub":"00000000-0000-0000-0000-000000000031","email":"ngo@plateshare.local","email_verified":true,"phone_verified":false}',
+    now(), now(), now())
+on conflict (provider_id, provider) do nothing;
+
+-- restaurant 6: PENDING (queue demo) + NGO 2: unverified (NGO queue demo)
+insert into public.restaurants (id, owner_user_id, name, cuisine_tags, fssai_license, fssai_expiry_date, address, geo, food_type, status)
+values ('10000000-0000-0000-0000-000000000006', '00000000-0000-0000-0000-000000000016', 'Ghatkopar Kitchen Test', '{cafe}', '66666666666666', now() + interval '300 days', 'Andheri East, Test Lane', extensions.st_setsrid(extensions.st_makepoint(72.8560, 19.1100), 4326), 'veg_nonveg', 'pending');
+insert into public.ngos (id, contact_user_id, name, reg_12a, reg_80g, darpan_id, geo, verified)
+values ('20000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000032', 'Seva Anna Foundation', 'MUM/12A/2020/0099', 'MUM/80G/0099', 'MH/2026/0999999', extensions.st_setsrid(extensions.st_makepoint(72.8400, 19.1200), 4326), false);
 
 -- audit rows for stage-3 seed states
 insert into public.audit_logs (actor_id, actor_role, entity, entity_id, action, old_value, new_value) values
