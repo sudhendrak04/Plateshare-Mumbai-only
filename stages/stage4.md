@@ -93,6 +93,8 @@ Build the internal web console (`console/`) used by the founders (admin) and ver
 | 3 | Lint config relaxes `react-compiler/react-compiler`, `react-hooks/set-state-in-effect`, `react-hooks/purity`, `@typescript-eslint/no-explicit-any` for the console | contort components vs relax | AI (internal console; data-fetching patterns standard) | Sep 2026 |
 | 4 | GoTrue password login requires: `auth.identities` row (provider_id = user uuid, identity_data with sub) + `instance_id` + confirmed email + bcrypt — **documented in seed.sql** | workaround-free | AI (learned by probe-user diff; future seed authors beware) | Sep 2026 |
 | 5 | Column-level grants + escalation trigger (security hardening) | trigger-only vs column grants + trigger | AI (defense in depth; bug found while building console) | Sep 2026 |
+| 6 | NGO role assignment: seed metadata + `ngo_apply` grants `role='ngo'` to the caller | portal guard by role vs by ngo-row existence | AI (founder hit the bug live: NGO login showed "requires admin role"; role fix committed `c581170`) | Sep 2026 |
+| 7 | Enum CASE typing fix in `admin_verify_vendor` (explicit `::restaurant_status` casts) + dedupe removed from N14 notify | cast literals vs restructure | AI (founder hit "column status is of type restaurant_status" on approve/reject; a verify→reject→re-verify cycle would also have collided on the dedupe key — both fixed; 5 new pgTAP tests added, 40 total) | Sep 2026 |
 
 ## 8. Status & dates
 

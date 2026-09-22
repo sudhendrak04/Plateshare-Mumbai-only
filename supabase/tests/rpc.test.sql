@@ -1,6 +1,6 @@
 -- Stage 3 · RPC pgTAP tests — 🔴 money paths + state machine (doc/12 §2 tests-first)
 begin;
-select plan(25);
+select plan(30);
 
 -- ── 1. reserve decrements atomically + order created ──
 set local role authenticated;
@@ -186,6 +186,45 @@ reset role;
 select is(
   (select (rating_avg > 0)::text from public.restaurants where id = '10000000-0000-0000-0000-000000000001'),
   'true', 'rating_avg recomputed > 0'
+);
+reset role;
+
+-- ── 9. admin vendor verification (approve / reject / non-admin denied) ──
+set local role authenticated;
+set local request.jwt.claim.sub = '00000000-0000-0000-0000-000000000021';
+set local request.jwt.claims = '{"sub":"00000000-0000-0000-0000-000000000021","role":"authenticated"}';
+select throws_ok(
+  'select public.admin_verify_vendor(''10000000-0000-0000-0000-000000000006''::uuid, true)',
+  '42501', null, 'non-admin cannot verify a vendor'
+);
+reset role;
+
+set local role authenticated;
+set local request.jwt.claim.sub = '00000000-0000-0000-0000-000000000001';
+set local request.jwt.claims = '{"sub":"00000000-0000-0000-0000-000000000001","role":"authenticated"}';
+select lives_ok(
+  'select public.admin_verify_vendor(''10000000-0000-0000-0000-000000000006''::uuid, true, null)',
+  'admin approves the pending vendor'
+);
+select is(
+  (select status::text from public.restaurants where id = '10000000-0000-0000-0000-000000000006'),
+  'verified', 'approved vendor status = verified'
+);
+reset role;
+
+-- restore pending state (as postgres; client roles cannot edit vendor status by design)
+update public.restaurants set status = 'pending' where id = '10000000-0000-0000-0000-000000000006';
+
+set local role authenticated;
+set local request.jwt.claim.sub = '00000000-0000-0000-0000-000000000001';
+set local request.jwt.claims = '{"sub":"00000000-0000-0000-0000-000000000001","role":"authenticated"}';
+select lives_ok(
+  'select public.admin_verify_vendor(''10000000-0000-0000-0000-000000000006''::uuid, false, ''docs incomplete'')',
+  'admin rejects the vendor with reason'
+);
+select is(
+  (select status::text from public.restaurants where id = '10000000-0000-0000-0000-000000000006'),
+  'rejected', 'rejected vendor status = rejected'
 );
 reset role;
 

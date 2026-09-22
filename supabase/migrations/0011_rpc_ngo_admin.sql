@@ -157,15 +157,15 @@ begin
   v_owner := v_rest.owner_user_id;
 
   update public.restaurants
-  set status = case when p_approve then 'verified' else 'rejected' end
+  set status = case when p_approve
+    then 'verified'::public.restaurant_status
+    else 'rejected'::public.restaurant_status end
   where id = p_restaurant_id;
 
   perform public.notify('N14_vendor_verification', 'push',
-    jsonb_build_object('restaurant_id', p_restaurant_id, 'result', case when p_approve then 'approved' else 'rejected' end, 'reason', p_reason),
-    'rest:' || p_restaurant_id::text || ':verify:push');
+    jsonb_build_object('restaurant_id', p_restaurant_id, 'result', case when p_approve then 'approved' else 'rejected' end, 'reason', p_reason));
   perform public.notify('N14_vendor_verification', 'whatsapp',
-    jsonb_build_object('result', case when p_approve then 'approved' else 'rejected' end, 'reason', p_reason),
-    'rest:' || p_restaurant_id::text || ':verify:wa');
+    jsonb_build_object('result', case when p_approve then 'approved' else 'rejected' end, 'reason', p_reason));
 
   perform public.audit('restaurants', p_restaurant_id::text,
     case when p_approve then 'verified' else 'rejected' end,
