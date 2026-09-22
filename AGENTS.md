@@ -121,6 +121,8 @@ Idempotency is mandatory on all payment webhooks: use Razorpay `payment_id`/`ord
 
 ## 9. Working method with this founder
 
+- **Git discipline (standing rule, founder-ordered):** The AI never runs `git add`, `git commit`, `git push`, or any history-modifying command (`--amend`, `filter-branch`, `rebase`, `reset --hard`). The founder performs all git operations manually. The AI prepares changes in the working tree, reports exactly what changed, and suggests a commit message — the founder executes.
+
 - **Decision authority: the founder.** Any critical, important, or architectural decision must be **confirmed by the founder before implementation** — the agent must never take such decisions on its own. This includes (non-exhaustive): changing the data model or schema, adding/removing/swapping libraries, services, or infrastructure, altering state machines, API contracts, money/payment flows, security behavior, pricing or fee logic, choosing between viable implementation approaches with materially different trade-offs, and anything not explicitly covered by the docs. When such a decision point arises: stop, present the options with trade-offs and a recommendation in plain language, and wait for the founder's explicit approval. Only genuinely trivial, doc-covered implementation details (naming, file layout, code style) may be decided autonomously.
 - The founder cannot read code. Every response must include a short plain-language summary of: what changed, why, what they need to do manually (if anything), and how to verify it works.
 - Prefer the smallest change that completes the task. Do not refactor working code unprompted; do not add features not requested; do not add libraries without stating why.
@@ -138,5 +140,5 @@ Delivery/logistics, iOS builds, multi-city support, WhatsApp bot, ML/AI quality 
 2. Analyze/lint/typecheck/test all pass locally.
 3. New money/logic paths have tests.
 4. `audit_logs` covers every new state transition.
-5. Docs updated if and only if the design changed (same commit).
+5. Docs updated if and only if the design changed (left in the working tree for the founder's commit).
 6. Plain-language summary + verification steps provided to the founder.
