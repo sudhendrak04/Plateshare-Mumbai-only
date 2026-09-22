@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'core/theme/app_theme.dart';
+
 void main() => runApp(const PlateShareVendorApp());
 
 const String _version =
@@ -12,10 +14,7 @@ class PlateShareVendorApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Plate Share — Vendor',
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1B5E20)),
-      ),
+      theme: AppTheme.vendor,
       home: const Scaffold(
         body: Center(
           child: Column(

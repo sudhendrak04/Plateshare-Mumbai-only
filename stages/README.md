@@ -10,7 +10,7 @@
 
 | Stage | File | Scope | Depends on | Status |
 |---|---|---|---|---|
-| 1 | `stage1.md` | Repo scaffolding + tooling (git, Flutter apps, Supabase project, CI) | — | ⬜ Not started |
+| 1 | `stage1.md` | Repo scaffolding + tooling (git, Flutter apps, Supabase project, CI) | — | ✅ Complete |
 | 2 | `stage2.md` | Database core — schema, enums, constraints, RLS, triggers | 1 | ⬜ Not started |
 | 3 | `stage3.md` | Business logic — RPC functions, sweeps, seed, SQL tests | 2 | ⬜ Not started |
 | 4 | `stage4.md` | Admin + NGO web console (Next.js) | 2 (3 for queues) | ⬜ Not started |
@@ -68,3 +68,4 @@ Tracked in `doc/PENDING_DECISIONS.md`:
 | Date | Entry |
 |---|---|
 | Sep 2026 | Stage folder created; 8 stages defined; no build work started yet. |
+| Sep 2026 | **Stage 1 complete** — toolchain installed (Flutter 3.47.5, JDK 17, Android SDK 36, Supabase CLI 2.117.0), both Flutter apps + Next.js console scaffolded, all analyze/lint/test/build gates green, debug APKs built for both apps, CI workflow committed, initial git commit. Deferred: emulator/device check (founder), GitHub push (founder), shadcn init (Stage 4). |
