@@ -36,7 +36,7 @@ Build the complete, production-shaped database: every table, enum, constraint, i
 - [x] Performance: listings (status, closes_at); orders (status); outbox (status, next_retry_at)
 
 ### 3.4 RLS
-- [x] `0007_rls.sql` — RLS enabled on all 17 tables; policies per `backend_plan.md` §6
+- [x] `0007_rls.sql` — RLS enabled on all 17 tables; policies per `doc/13-backend-plan.md` §6
 - [x] Helpers: `app_role()`, `is_admin()`, `is_vendor_for_listing(uuid)` (security definer — breaks the orders↔listings policy recursion)
 - [x] outbox / audit_logs / app_config / notification_templates → zero client policies (service-role only)
 

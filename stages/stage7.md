@@ -8,7 +8,7 @@
 
 ## 1. Objective
 
-Wire the "always-on" backend: all Edge Functions (`backend/backend_plan.md` §7), the four scheduled jobs, the outbox worker, and the notification pipeline (FCM + SMS + WhatsApp hooks). By the end, listings expire themselves, no-shows strike automatically, donations broadcast and expire, and every notification trigger in `doc/08` fires in staging.
+Wire the "always-on" backend: all Edge Functions (`doc/13-backend-plan.md` §7), the four scheduled jobs, the outbox worker, and the notification pipeline (FCM + SMS + WhatsApp hooks). By the end, listings expire themselves, no-shows strike automatically, donations broadcast and expire, and every notification trigger in `doc/08` fires in staging.
 
 ## 2. Prerequisites
 

@@ -45,12 +45,12 @@ Rules:
 | Stage | Implements | Key reference docs |
 |---|---|---|
 | 1 | `doc/12` Phase 0 | `doc/06` (stack), `AGENTS.md` §4 |
-| 2 | `doc/12` Phase 1 (schema part) | `doc/03` (data model), `backend/backend_plan.md` §5–6 |
-| 3 | `doc/12` Phase 1 (logic part) | `doc/05` (API/RPC), `backend/backend_plan.md` §3 |
+| 2 | `doc/12` Phase 1 (schema part) | `doc/03` (data model), `doc/13-backend-plan.md` §5–6 |
+| 3 | `doc/12` Phase 1 (logic part) | `doc/05` (API/RPC), `doc/13-backend-plan.md` §3 |
 | 4 | `doc/12` Phase 2 | `doc/02` §4 (admin flows), `doc/05` §5 |
 | 5 | `doc/12` Phase 3 | `doc/02` §1 (vendor flows), `doc/09` (QA rules) |
 | 6 | `doc/12` Phase 4 | `doc/02` §2 (buyer flows), `doc/08` (notifications UX) |
-| 7 | `doc/12` Phase 5 | `doc/04` §4 (jobs), `doc/08` (triggers), `backend/backend_plan.md` §7–8 |
+| 7 | `doc/12` Phase 5 | `doc/04` §4 (jobs), `doc/08` (triggers), `doc/13-backend-plan.md` §7–8 |
 | 8 | `doc/12` Phases 6–7 | `doc/07` (payments/compliance), `doc/10` (launch) |
 
 ## 4. Pending decisions that gate stages
@@ -72,3 +72,5 @@ Tracked in `doc/PENDING_DECISIONS.md`:
 | Sep 2026 | **Stage 2 complete** — 9 migrations (17 tables, 13 enums, PostGIS, price/freshness constraints, RLS on all tables, 5 trigger groups incl. live-listing guard + audit immutability), seed data (2 Mumbai clusters, 5 vendors, NGO, demo listing), 10/10 pgTAP tests passing. Fixed RLS recursion via security-definer helper. |
 | Sep 2026 | **Stage 3 complete** — 25 RPC functions (buyer/vendor/NGO/admin + 3 sweeps + cron wrapper), COD trust gate, QR/OTP pickup verification, suspension ladder, donation broadcast/claim/TTL, all money-path pgTAP tests passing (35 tests total across both files). Money-path tests written alongside implementation. Seed now demos every order state. Payment gateway + payout SQL deferred to Stage 7 (outbox rows produced). |
 | Sep 2026 | **Stage 4 complete** — full Next.js console (admin: ops dashboard w/ sell-through, vendor+NGO verification queues, listing audit with EXIF/geo flags + one-click delist, dispute resolution, GST CSV export; NGO portal with claim/pickup/beneficiaries), live Mumbai-IST clock, role-guarded shell. Security migration 0013: column-level grants kill vendor self-verification escalation, self-escalation trigger, audit RPC raises for non-admins. All gates green (lint/tsc/build 0, 35/35 SQL tests, API smoke incl. NGO-denied-on-admin-RPC). Dev logins seeded. |
+| Sep 2026 | Founder walkthrough fixes: NGO role assignment (seed + `ngo_apply` grants `role='ngo'`), `admin_verify_vendor` enum CASE typing + N14 dedupe collision — verify path now pgTAP-covered (40 tests). Console bugs found and fixed by founder-as-tester. |
+| Sep 2026 | Docs restructure: `backend/backend_plan.md` moved to `doc/13-backend-plan.md`; `backend/` folder removed; all cross-references updated. |

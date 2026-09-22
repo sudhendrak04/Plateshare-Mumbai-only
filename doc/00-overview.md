@@ -78,6 +78,7 @@ Unsold boxes → one-tap donate to verified NGO (Roti Bank / RHA)
 | `10-launch-plan.md` | Mumbai launch: vendor recruitment playbook, timeline, monsoon plan |
 | `11-risks.md` | Risk register + open questions |
 | `12-ai-dev-guide.md` | How this repo gets built by AI: order of work, prompts, guardrails |
+| `13-backend-plan.md` | Backend plan reference: outbox pattern, money-paths, RLS matrix, migrations |
 
 ## 8. The honest bottom line (read before building)
 

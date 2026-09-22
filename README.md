@@ -8,7 +8,6 @@ Mystery-box marketplace: Mumbai restaurants/cafés/bakeries sell unsold surplus 
 
 ```
 doc/                  Product & architecture specifications (source of truth)
-backend/              Backend plan reference
 stages/               Build journal — one .md per stage
 apps/buyer/           Flutter app for buyers (students, professionals)
 apps/vendor/          Flutter app for restaurants/cafés/bakeries

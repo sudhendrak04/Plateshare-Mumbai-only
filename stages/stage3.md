@@ -89,7 +89,7 @@ Implement all server-trusted business logic as Postgres RPC functions: the order
 |---|---|---|---|---|
 | 1 | `reserve_order` returns qr_token + pickup_otp (superset of doc/05 return spec) | 3 fields per doc vs 5 fields | AI (trivial superset — buyer UI needs QR+OTP to display) | Sep 2026 |
 | 2 | COD hold expiry = window_end − 15 min (doc/07 §1.2 abuse guard implemented in sweep) | 10-min hold for both vs window-relative COD hold | AI (doc-covered) | Sep 2026 |
-| 3 | No payment/Razorpay calls inside RPCs — refund/payout requests go through `outbox` rows (outbox pattern per `backend_plan.md` §2) | direct gateway calls vs outbox | AI (doc-covered architecture rule) | Sep 2026 |
+| 3 | No payment/Razorpay calls inside RPCs — refund/payout requests go through `outbox` rows (outbox pattern per `doc/13-backend-plan.md` §2) | direct gateway calls vs outbox | AI (doc-covered architecture rule) | Sep 2026 |
 | 4 | `update_listing_qty` takes absolute `new_qty_total` (not delta) | delta vs set-total | AI (simpler guard math, same UX) | Sep 2026 |
 | 5 | Refund execution deferred to Stage 7 webhook; `admin_resolve_incident(refund)` flips rows + enqueues `refund_request` outbox row | full gateway flow now vs staged | AI (per plan §7) | Sep 2026 |
 

@@ -8,7 +8,7 @@
 ## 1. OTP / SMS provider
 
 **Status:** Deferred
-**Touches:** Auth (phone OTP), `doc/06-tech-stack.md`, `backend/backend_plan.md` §10
+**Touches:** Auth (phone OTP), `doc/06-tech-stack.md`, `doc/13-backend-plan.md` §10
 
 ### Context
 Supabase Auth phone-OTP natively supports: **Twilio, MessageBird, Textlocal, Vonage** (no custom code). **MSG91 is not native** — it requires a custom "Send SMS" hook, which is a **Pro-plan feature**.
@@ -32,7 +32,7 @@ Decide when we reach the auth implementation phase (build Phase 3, `doc/12-ai-de
 ## 2. Vendor payout mechanism
 
 **Status:** Deferred
-**Touches:** Payments, `doc/07-payments-compliance.md` §3, `backend/backend_plan.md` §9
+**Touches:** Payments, `doc/07-payments-compliance.md` §3, `doc/13-backend-plan.md` §9
 
 ### Context
 Two ways to move vendor money:
@@ -56,5 +56,5 @@ Decide **after** the CA consult resolves the GST model (`doc/07` §4, Week 4 gat
 | # | Decision | Outcome | Date |
 |---|---|---|---|
 | 1 | Supabase plan | Free tier for now | Sep 2026 |
-| 2 | backend_plan.md scope | Concise reference first, full build spec later | Sep 2026 |
-| 3 | backend file location | `backend/backend_plan.md`; pending decisions in `doc/PENDING_DECISIONS.md` | Sep 2026 |
+| 2 | doc/13-backend-plan.md scope | Concise reference first, full build spec later | Sep 2026 |
+| 3 | backend file location | `doc/13-backend-plan.md`; pending decisions in `doc/PENDING_DECISIONS.md` | Sep 2026 |

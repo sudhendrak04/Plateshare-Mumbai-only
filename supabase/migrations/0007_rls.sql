@@ -1,4 +1,4 @@
--- Stage 2 · 0007_rls — default-deny + policies (backend/backend_plan.md §6)
+-- Stage 2 · 0007_rls — default-deny + policies (doc/13-backend-plan.md §6)
 -- Helper functions: security definer so policies never recurse on profiles.
 
 create or replace function public.app_role()

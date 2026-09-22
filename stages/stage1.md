@@ -12,7 +12,7 @@ Create the empty-but-runnable skeleton of the whole system so that every later s
 
 ## 2. Prerequisites
 
-- [x] Planning docs complete (`doc/00`–`doc/12`, `backend/backend_plan.md`)
+- [x] Planning docs complete (`doc/00`–`doc/12`, `doc/13-backend-plan.md`)
 - [x] Toolchain installed by AI (Flutter 3.47.5, JDK 17, Android SDK 36, Supabase CLI 2.117.0; Git + Node 24 already present)
 - [ ] **Founder:** Supabase account + 1 project created (free tier, region Mumbai ap-south-1 if available) — keys still needed for later stages
 - [ ] **Founder:** optional GitHub repo + push (local-only git works for now)
@@ -63,7 +63,7 @@ PlateShare/
 ├── supabase/          (CLI 2.117.0 init; config.toml, empty migrations/functions, seed placeholder)
 ├── .github/workflows/ci.yml
 ├── stages/            (this journal)
-├── doc/, backend/     (specs)
+├── doc/               (specs — now includes 13-backend-plan.md)
 ```
 
 ## 5. Acceptance criteria

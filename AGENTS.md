@@ -28,7 +28,8 @@ Instructions for AI coding agents working in this repository. Read this file ful
 | Food-safety QA system | `doc/09-qa-food-safety.md` |
 | Launch plan (Mumbai) | `doc/10-launch-plan.md` |
 | Risks & kill criteria | `doc/11-risks.md` |
-| How to build with AI (order of work, prompt patterns) | `doc/12-ai-dev-guide.md` |
+| How to build with AI (order of work, prompts, guardrails) | `doc/12-ai-dev-guide.md` |
+| Backend plan reference (outbox pattern, money-paths, RLS matrix) | `doc/13-backend-plan.md` |
 
 ## 3. Tech stack (do not substitute)
 
